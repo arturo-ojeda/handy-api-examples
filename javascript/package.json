@@ -1,0 +1,17 @@
+{
+  "name": "handy-api-javascript",
+  "version": "1.0.0",
+  "description": "Handy API examples",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Arturo Ojeda",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "dotenv": "^10.0.0",
+    "moment": "^2.29.1",
+    "node-fetch": "2.6.6"
+  }
+}
