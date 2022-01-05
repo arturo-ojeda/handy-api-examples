@@ -22,7 +22,10 @@ const cronExpression = '*/10 * * * *'
 
 const businessLogic = async function (salesOrders) {
     // Implement your business logic here:
-    console.log(salesOrders);
+    console.log(`Received ${salesOrders.length} sales orders`);
+    salesOrders.forEach(salesOrder => {
+        // console.log(salesOrder.id);
+    })
 };
 
 // -----------------------------------------------------------------------------
@@ -35,33 +38,31 @@ const dateFormat = 'DD/MM/YYYY HH:mm:ss'
 const moment = require('moment');
 
 const fetchSalesOrders = async () => {
-    let lastTime;
+    let lastTime = {};
     const filePath = './last_time.json';
+
     if (fs.existsSync(filePath)) {
-        lastTime = JSON.parse(fs.readFileSync(filePath));
-        lastTime.start = lastTime.end
+        lastTime.start = JSON.parse(fs.readFileSync(filePath));
         lastTime.end = moment().format(dateFormat);
     } else {
         // Defaults
-        lastTime = {
-            start: moment().format(dateFormat),
-            end: moment().format(dateFormat)
-        }
+        lastTime.start = moment().format(dateFormat);
+        lastTime.end = lastTime.start;
     }
 
     const url = `https://app.handy.la/api/v2/salesOrder?start=${lastTime.start}&end=${lastTime.end}`;
-    const response = await queryHandyAPI(url);
+    let response = await queryHandyAPI(url);
 
     if (!response) {
         console.log('No response from Handy API');
         return
     }
 
-    const salesOrders = response.salesOrders
+    let salesOrders = response.salesOrders
 
-    while (response && response.pagination.nextPage) {
+    while (response && response.pagination && response.pagination.nextPage) {
         response = await queryHandyAPI(response.pagination.nextPage);
-        salesOrders.push(...response.salesOrders);
+        if (response) salesOrders.push(...response.salesOrders);
     }
 
     try {
@@ -70,7 +71,7 @@ const fetchSalesOrders = async () => {
         console.error("Error implementing business logic", e);
     }
 
-    fs.writeFileSync('lastTime.json', JSON.stringify(lastTime));
+    fs.writeFileSync('last_time.json', JSON.stringify(lastTime.end));
 };
 
 const queryHandyAPI = async function (url) {

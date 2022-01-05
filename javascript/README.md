@@ -1,1 +1,1 @@
-Use the command `node index.js` to run the process.
+Check `index.js` for instructions.
