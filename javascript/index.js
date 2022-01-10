@@ -1,6 +1,8 @@
 /**
  * Sample code to fetch sales orders from Handy API.
- * It can query created and deleted sales orders.
+ * It can query created and deleted sales orders
+ * multiple times a day, in the specified interval.
+ * 
  * Run the code with `node index.js`
  * 
  * You only need to implement your business logic in the businessLogic function.
@@ -14,7 +16,7 @@
  * Note:
  * 1. You need to set the HANDY_BEARER_TOKEN environment variable to your Handy API bearer token.
  *    You can either create a .env file or add it as an environment variable in your operating system.
- * 2. You can adjust the cron expression to run the code at a frequency.
+ * 2. You can adjust the cron expression to run the code at a frequency that you desire.
  * 
  */
 
@@ -122,7 +124,7 @@ const queryHandyAPI = async function (url) {
 const saveExternalIdOnSalesOrder = async function (salesOrderId, externalId) {
     const url = `https://app.handy.la/api/v2/salesOrder/${salesOrderId}`;
     const response = await fetch(url, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Authorization': `Bearer ${process.env.HANDY_BEARER_TOKEN}`,
             'Content-Type': 'application/json'
@@ -142,4 +144,4 @@ const sleep = function (ms) {
 }
 
 new CronJob(cronExpression, jobFunction, null, true, 'America/Mexico_City', this, true);
-console.log("Started cron job");
+console.log("Started cron job"); 
