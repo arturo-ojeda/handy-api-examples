@@ -3,6 +3,7 @@
  * It can query created and deleted sales orders
  * multiple times a day, in the specified interval.
  * 
+ * Make sure you have packages installed with `npm install`.
  * Run the code with `node index.js`
  * 
  * You only need to implement your business logic in the businessLogic function.
@@ -42,7 +43,8 @@ const businessLogic = async function (salesOrders, deleted) {
             // for future reference if the sales order is deleted in Handy.
             // Then you can easily find the corresponding sales order in your system
             // and delete it too.
-            await saveExternalIdOnSalesOrder(salesOrder.id, salesOrder.externalId);
+            // Uncomment line:
+            // await saveExternalIdOnSalesOrder(salesOrder.id, yourExternalId);
         }
     }
 };
