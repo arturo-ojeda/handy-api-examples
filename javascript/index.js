@@ -43,7 +43,7 @@ const businessLogic = async function (salesOrders, deleted) {
             // for future reference if the sales order is deleted in Handy.
             // Then you can easily find the corresponding sales order in your system
             // and delete it too.
-            // Uncomment line:
+            // Uncomment line below to save externalId on sales order∫:
             // await saveExternalIdOnSalesOrder(salesOrder.id, yourExternalId);
         }
     }
