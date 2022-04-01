@@ -1,4 +1,6 @@
 /**
+ * If you need to fecth closed routes go to `routes.js`
+ * Sample code to fetch sales orders from Handy API.
  * Sample code to fetch sales orders from Handy API.
  * It can query created and deleted sales orders
  * multiple times a day, in the specified interval.
