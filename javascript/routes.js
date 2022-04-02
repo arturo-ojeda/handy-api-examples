@@ -1,14 +1,15 @@
 /**
- * If you need to fecth closed routes go to `routes.js`
- * Sample code to fetch sales orders from Handy API.
- * Sample code to fetch sales orders from Handy API.
- * It can query created and deleted sales orders
- * multiple times a day, in the specified interval.
+ * If you need to fecth sales orders go to `index.js`
+ * Sample code to fetch closed routes 
+ * with their sales from Handy API.
+ * It can query closed routes multiple times a day,
+ * in the specified interval.
  * 
  * Make sure you have packages installed with `npm install`.
- * Run the code with `node index.js`
+ * To run this code you need to rename this file as `index.js`
+ * And then run with `node index.js`
  * 
- * You only need to implement your business logic in the businessLogic function.
+ * You only need to implement your business logic in the businessLogic and salesOrderBusinessLogic functions.
  * 
  * This code handles the API:
  * - Rate limit
@@ -27,28 +28,41 @@
 // Default: every 10 minutes
 const cronExpression = '*/10 * * * *'
 
-const businessLogic = async function (salesOrders, deleted) {
-    console.log(`${deleted ? 'Fetched deleted orders' : 'Fetched created orders'}. Received ${salesOrders.length} sales orders.`);
+const businessLogic = async function (routes) {
+    console.log(`Fetched closed routes. Received ${routes.length} routes.`);
 
-    for (const salesOrder of salesOrders) {
-        if (deleted) {
-            // A sales order was deleted in Handy
-            // If you want, you can delete the externalId from your system.
-        } else {
-            // *****
-            // Implement your business logic here:
-            // ✅ Save sales order in your ERP or system.
-            // *****
+    for (const route of routes) {
+        // A route was closed in Handy
+        // Now, you have the route information and the sales orders.
 
-            // Once you saved the sales order in your system, 
-            // you can save the externalId on the sales order with the Handy API
-            // for future reference if the sales order is deleted in Handy.
-            // Then you can easily find the corresponding sales order in your system
-            // and delete it too.
-            // Uncomment line below to save externalId on sales order∫:
-            // await saveExternalIdOnSalesOrder(salesOrder.id, yourExternalId);
+        // *****
+        // If you need to save route's information implement your business logic here:
+        // If you only need the sales orders don't implement nothing here
+        // and look out the next piece of code
+        // *****
+        let salesOrdersIds = route.salesOrders
+
+        for(const salesOrderId of salesOrdersIds) {
+            await fetchSalesOrder(salesOrderId)
         }
     }
+};
+
+const salesOrderBusinessLogic = async function (salesOrder) {
+    console.log(`Fetched sales order. Id ${salesOrder.id}.`);
+
+    // *****
+    // Implement your business logic here:
+    // ✅ Save sales order in your ERP or system.
+    // *****
+
+    // Once you saved the sales order in your system, 
+    // you can save the externalId on the sales order with the Handy API
+    // for future reference if the sales order is deleted in Handy.
+    // Then you can easily find the corresponding sales order in your system
+    // and delete it too.
+    // Uncomment line below to save externalId on sales order∫:
+    // await saveExternalIdOnSalesOrder(salesOrder.id, yourExternalId);
 };
 
 // -----------------------------------------------------------------------------
@@ -61,13 +75,31 @@ const dateFormat = 'DD/MM/YYYY HH:mm:ss'
 const moment = require('moment');
 
 const jobFunction = async function () {
-    await fetchSalesOrders(false);
-    await fetchSalesOrders(true);
+    await fetchRoutes();
 }
 
-const fetchSalesOrders = async (deleted) => {
+const fetchSalesOrder = async (salesOrderId) => {
+
+    const url = `https://app.handy.la/api/v2/salesOrder/${salesOrderId}`;
+    let response = await queryHandyAPI(url);
+
+    if (!response) {
+        console.log('No response from Handy API');
+        return
+    }
+
+    let salesOrder = response
+
+    try {
+        await salesOrderBusinessLogic(salesOrder);
+    } catch (e) {
+        console.error("Error implementing sales order business logic", e);
+    }
+};
+
+const fetchRoutes = async () => {
     let lastTime = {};
-    const filePath = deleted ? './last_time_deleted.json' : './last_time.json';
+    const filePath = './routes_last_time.json';
 
     if (fs.existsSync(filePath)) {
         lastTime.start = JSON.parse(fs.readFileSync(filePath));
@@ -78,7 +110,7 @@ const fetchSalesOrders = async (deleted) => {
         lastTime.end = lastTime.start;
     }
 
-    const url = `https://app.handy.la/api/v2/salesOrder?start=${lastTime.start}&end=${lastTime.end}&deleted=${deleted}`;
+    const url = `https://app.handy.la/api/v2/route?includeSalesOrders=true&filterWithDate=dateClosed&start=${lastTime.start}&end=${lastTime.end}`;
     let response = await queryHandyAPI(url);
 
     if (!response) {
@@ -86,15 +118,15 @@ const fetchSalesOrders = async (deleted) => {
         return
     }
 
-    let salesOrders = response.salesOrders
+    let routes = response.routes
 
     while (response && response.pagination && response.pagination.nextPage) {
         response = await queryHandyAPI(response.pagination.nextPage);
-        if (response) salesOrders.push(...response.salesOrders);
+        if (response) routes.push(...response.routes);
     }
 
     try {
-        await businessLogic(salesOrders, deleted);
+        await businessLogic(routes);
     } catch (e) {
         console.error("Error implementing business logic", e);
     }
