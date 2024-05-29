@@ -78,7 +78,7 @@ const fetchSalesOrders = async (deleted) => {
         lastTime.end = lastTime.start;
     }
 
-    const url = `https://app.handy.la/api/v2/salesOrder?start=${lastTime.start}&end=${lastTime.end}&deleted=${deleted}`;
+    const url = `https://hub.handy.la/api/v2/salesOrder?start=${lastTime.start}&end=${lastTime.end}&deleted=${deleted}`;
     let response = await queryHandyAPI(url);
 
     if (!response) {
@@ -126,7 +126,7 @@ const queryHandyAPI = async function (url) {
 };
 
 const saveExternalIdOnSalesOrder = async function (salesOrderId, externalId) {
-    const url = `https://app.handy.la/api/v2/salesOrder/${salesOrderId}`;
+    const url = `https://hub.handy.la/api/v2/salesOrder/${salesOrderId}`;
     const response = await fetch(url, {
         method: 'PUT',
         headers: {
