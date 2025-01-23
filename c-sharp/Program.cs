@@ -97,7 +97,7 @@ namespace Handy
                 dt.Start = System.IO.File.ReadAllText(FilePath).ToString();
                 dt.End = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
             }
-            string URL = "https://app.handy.la/api/v2/salesOrder?start=" + dt.Start + "&end=" + dt.End + "&deleted=" + deleted;
+            string URL = "https://hub.handy.la/api/v2/salesOrder?start=" + dt.Start + "&end=" + dt.End + "&deleted=" + deleted;
             IRestResponse response = queryhandyapi(URL);
 
             if (response.StatusCode.ToString() == "OK")
@@ -132,7 +132,7 @@ namespace Handy
 
         private void saveExternalIdOnSalesOrder(int id, int externalId)
         {
-            var client = new RestClient("https://app.handy.la/api/v2/salesOrder/" + id);
+            var client = new RestClient("https://hub.handy.la/api/v2/salesOrder/" + id);
             client.Timeout = -1;
             var request = new RestRequest(Method.PUT);
             request.AddHeader("Authorization", "Bearer " + Token);

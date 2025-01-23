@@ -13,7 +13,7 @@ Dim jsonProductData As String
 jsonProductData = JsonConverter.ConvertToJson(productData)
 
 Dim requestUrl As String
-requestUrl = "https://app.handy.la/api/v2/product"
+requestUrl = "https://hub.handy.la/api/v2/product"
 
 Dim authHeader As String
 authHeader = "Authorization: Bearer YOUR_TOKEN_HERE"

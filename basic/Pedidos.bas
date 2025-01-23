@@ -10,7 +10,7 @@ Private Sub Form_Load()
     Dim endDate As String
     endDate = "31/01/2022 23:59:59"
     Dim url As String
-    url = "https://app.handy.la/api/v2/salesOrder"
+    url = "https://hub.handy.la/api/v2/salesOrder"
     If startDate <> "" And endDate <> "" Then
         url = url & "?startDate=" & startDate & "&endDate=" & endDate
     End If

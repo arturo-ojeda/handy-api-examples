@@ -80,7 +80,7 @@ const jobFunction = async function () {
 
 const fetchSalesOrder = async (salesOrderId) => {
 
-    const url = `https://app.handy.la/api/v2/salesOrder/${salesOrderId}`;
+    const url = `https://hub.handy.la/api/v2/salesOrder/${salesOrderId}`;
     let response = await queryHandyAPI(url);
 
     if (!response) {
@@ -110,7 +110,7 @@ const fetchRoutes = async () => {
         lastTime.end = lastTime.start;
     }
 
-    const url = `https://app.handy.la/api/v2/route?includeSalesOrders=true&filterWithDate=dateClosed&start=${lastTime.start}&end=${lastTime.end}`;
+    const url = `https://hub.handy.la/api/v2/route?includeSalesOrders=true&filterWithDate=dateClosed&start=${lastTime.start}&end=${lastTime.end}`;
     let response = await queryHandyAPI(url);
 
     if (!response) {
@@ -158,7 +158,7 @@ const queryHandyAPI = async function (url) {
 };
 
 const saveExternalIdOnSalesOrder = async function (salesOrderId, externalId) {
-    const url = `https://app.handy.la/api/v2/salesOrder/${salesOrderId}`;
+    const url = `https://hub.handy.la/api/v2/salesOrder/${salesOrderId}`;
     const response = await fetch(url, {
         method: 'PUT',
         headers: {
